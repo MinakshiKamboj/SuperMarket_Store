@@ -43,6 +43,7 @@ import com.supermarket.store.utils.SessionManager;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,6 +68,7 @@ public class ProductActivity extends AppCompatActivity implements GetResult.MyLi
     ProductDataItem dataItem;
     SessionManager sessionManager;
     CustPrograssbar custPrograssbar;
+    String price;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -91,7 +93,7 @@ public class ProductActivity extends AppCompatActivity implements GetResult.MyLi
         floatingActionButton.setOnClickListener(view -> bottonAttributes());
         dataItem = (ProductDataItem) getIntent().getParcelableExtra("MyClass");
         productInfoItems = getIntent().getParcelableArrayListExtra("MyList");
-
+        price = getIntent().getStringExtra("price");
         txtTitle.setText("" + dataItem.getProductName());
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -117,17 +119,22 @@ public class ProductActivity extends AppCompatActivity implements GetResult.MyLi
         for (int i = 0; i < productInfoItems.size(); i++) {
             ProductInfoItem listdatum = productInfoItems.get(i);
             LayoutInflater inflater = LayoutInflater.from(ProductActivity.this);
-
             View view = inflater.inflate(R.layout.product_attributs_item, null);
             EditText txtPtype = view.findViewById(R.id.txt_ptype);
             EditText txtPrice = view.findViewById(R.id.txt_price);
             EditText txtDiscount = view.findViewById(R.id.txt_discount);
+            EditText txtDiscountAmt = view.findViewById(R.id.txt_discount1);
             Switch aswitch = view.findViewById(R.id.switch1);
             Button btnSave = view.findViewById(R.id.btnsave);
             aswitch.setChecked(!listdatum.getProductOutStock().equalsIgnoreCase("1"));
             txtPtype.setText("" + listdatum.getProductType());
             txtPrice.setText(listdatum.getProductPrice());
             txtDiscount.setText("" + listdatum.getProductDiscount());
+            double res1 = (Double.parseDouble(listdatum.getProductPrice()) / 100) * Double.parseDouble(
+                    listdatum.getProductDiscount());
+            DecimalFormat df = new DecimalFormat("#.##");
+            String formatted = df.format(res1);
+            txtDiscountAmt.setText("" +formatted);
             aswitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
@@ -142,33 +149,31 @@ public class ProductActivity extends AppCompatActivity implements GetResult.MyLi
             btnSave.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    double res2 = (Double.parseDouble(txtDiscountAmt.getText().toString()) / Double.parseDouble(listdatum.getProductPrice()) * 100);
+                    String formatted1 = df.format(res2);
                     if (TextUtils.isEmpty(txtPtype.getText().toString())) {
                         txtPtype.setError("Enter Product Type");
                         return;
                     }
-
                     if (TextUtils.isEmpty(txtPrice.getText().toString())) {
                         txtPrice.setError("Enter Product Price");
                         return;
                     }
-                    if (TextUtils.isEmpty(txtDiscount.getText().toString())) {
-                        txtDiscount.setError("Enter Product Discount");
+                    if (txtDiscountAmt.getText().toString().equals("")) {
+                        txtDiscountAmt.setError("Enter Product Discount");
                         return;
                     }
-
                     if (aswitch.isChecked()) {
-                        updateattribut(listdatum.getAttributeId(), "0", txtPrice.getText().toString(), txtPtype.getText().toString(), txtDiscount.getText().toString());
+//                        updateattribut(listdatum.getAttributeId(), "0", txtPrice.getText().toString(), txtPtype.getText().toString(), txtDiscount.getText().toString());
+                        updateattribut(listdatum.getAttributeId(), "0", txtPrice.getText().toString(), txtPtype.getText().toString(),formatted1);
                     } else {
-                        updateattribut(listdatum.getAttributeId(), "1", txtPrice.getText().toString(), txtPtype.getText().toString(), txtDiscount.getText().toString());
-
+//                        updateattribut(listdatum.getAttributeId(), "1", txtPrice.getText().toString(), txtPtype.getText().toString(), txtDiscount.getText().toString());
+                        updateattribut(listdatum.getAttributeId(), "1", txtPrice.getText().toString(), txtPtype.getText().toString(),formatted1);
                     }
-
                 }
             });
-
             linearLayout.addView(view);
         }
-
     }
 
     private void productstatus(String id, String status) {

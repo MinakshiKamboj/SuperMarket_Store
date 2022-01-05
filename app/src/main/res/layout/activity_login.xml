@@ -46,6 +46,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Mobile/Email"
+                android:text="store@app.com"
                 android:inputType="text"
                 android:textColor="@color/colorBalck" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -62,6 +63,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Password"
+                android:text="store@123"
                 android:inputType="textPassword"
                 android:textColor="@color/colorBalck" />
         </com.google.android.material.textfield.TextInputLayout>

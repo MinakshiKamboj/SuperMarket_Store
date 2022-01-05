@@ -23,13 +23,43 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="15dp"
-
         android:text="0 orders"
         android:textColor="@color/colorPrimary" />
+
+    <LinearLayout
+        android:id="@+id/linear3"
+        android:layout_below="@+id/linear"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_margin="15dp"
+        android:background="@drawable/box"
+        >
+
+        <EditText
+            android:id="@+id/txt_searchTxt1"
+            android:layout_width="match_parent"
+            android:layout_height="43dp"
+            android:background="@color/colorWhite"
+            android:layout_marginTop="1dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:hint="search here..."/>
+    </LinearLayout>
+    <TextView
+        android:id="@+id/tv_noitemfound"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="5dp"
+        android:visibility="gone"
+        android:text="No item found"/>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycle_home"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1" />
+
+
 
 </LinearLayout>

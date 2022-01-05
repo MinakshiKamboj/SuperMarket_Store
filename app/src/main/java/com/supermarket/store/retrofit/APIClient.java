@@ -28,5 +28,4 @@ public class APIClient {
 
         return retrofit.create(UserService.class);
     }
-
 }

@@ -1,6 +1,8 @@
 package com.supermarket.store.fregment;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +20,7 @@ import com.supermarket.store.R;
 import com.supermarket.store.adepter.Homeadepter;
 import com.supermarket.store.model.HomeStore;
 import com.supermarket.store.model.Store;
+import com.supermarket.store.model.StoreReportDataItem;
 import com.supermarket.store.retrofit.APIClient;
 import com.supermarket.store.retrofit.GetResult;
 import com.supermarket.store.utils.CustPrograssbar;
@@ -26,23 +29,26 @@ import com.supermarket.store.utils.SessionManager;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import retrofit2.Call;
 
 public class HomeFragment extends Fragment implements GetResult.MyListener {
-
-
     @BindView(R.id.txt_name)
     TextView txtName;
     @BindView(R.id.txt_itmecount)
     TextView txtItmecount;
-
-
-
+    @BindView(R.id.txt_searchTxt1)
+    TextView txtSearchItem;
     @BindView(R.id.recycle_home)
     RecyclerView recycleHome;
+    @BindView(R.id.tv_noitemfound)
+    TextView tv_noitemfound;
     CustPrograssbar custPrograssbar;
+    ArrayList<StoreReportDataItem> tempTypes1 = new ArrayList<>();
+    Homeadepter homeadepter;
     SessionManager sessionManager;
     Store store;
 
@@ -67,7 +73,35 @@ public class HomeFragment extends Fragment implements GetResult.MyListener {
         Log.e("fjfjlfjl", "jfljalfjaflkaf");
         recycleHome.setLayoutManager(new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL));
         getDesbord();
+
+        txtSearchItem.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
+
+                filter(s.toString());
+            }
+        });
         return view;
+    }
+
+    private void filter(String text) {
+        ArrayList<StoreReportDataItem> mytempLists1 = new ArrayList<>();
+        for (StoreReportDataItem item : tempTypes1){
+            if (item.getTitle().toLowerCase().startsWith(text.toLowerCase())){
+                mytempLists1.add(item);
+            }else{
+                tv_noitemfound.setVisibility(View.VISIBLE);
+            }
+        }
+        homeadepter.filterListed(mytempLists1);
     }
 
     private void getDesbord() {
@@ -76,7 +110,6 @@ public class HomeFragment extends Fragment implements GetResult.MyListener {
         try {
             jsonObject.put("sid", store.getId());
             JsonParser jsonParser = new JsonParser();
-
             Call<JsonObject> call = APIClient.getInterface().getDesbord((JsonObject) jsonParser.parse(jsonObject.toString()));
             GetResult getResult = new GetResult();
             getResult.setMyListener(this);
@@ -95,7 +128,8 @@ public class HomeFragment extends Fragment implements GetResult.MyListener {
                 Gson gson = new Gson();
                 HomeStore homeStore = gson.fromJson(result.toString(), HomeStore.class);
                 if (homeStore.getResult().equalsIgnoreCase("true")) {
-                    Homeadepter homeadepter = new Homeadepter(homeStore.getStoreReportData(), getActivity());
+                    tempTypes1 = (ArrayList<StoreReportDataItem>) homeStore.getStoreReportData();
+                    homeadepter = new Homeadepter(homeStore.getStoreReportData(), getActivity());
                     recycleHome.setAdapter(homeadepter);
                 }
             }

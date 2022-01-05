@@ -3,6 +3,8 @@ package com.supermarket.store.fregment;
 import android.content.Intent;
 import android.graphics.Paint;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -28,6 +31,7 @@ import com.supermarket.store.model.PendingOrderItem;
 import com.supermarket.store.model.Product;
 import com.supermarket.store.model.ProductDataItem;
 import com.supermarket.store.model.Store;
+import com.supermarket.store.model.StoreReportDataItem;
 import com.supermarket.store.retrofit.APIClient;
 import com.supermarket.store.retrofit.GetResult;
 import com.supermarket.store.utils.CustPrograssbar;
@@ -54,11 +58,16 @@ public class ProductFragment extends Fragment implements GetResult.MyListener, O
     TextView txtItmecount;
     @BindView(R.id.recycle_pending)
     RecyclerView recyclePending;
-
+    @BindView(R.id.img_search)
+    ImageView img_search;
+    @BindView(R.id.linear3)
+    LinearLayout linear3;
+    @BindView(R.id.txt_searchTxt1)
+    TextView txtSearchItem;
+    @BindView(R.id.tv_noitemfound)
+    TextView tv_noitemfound;
     @BindView(R.id.fab)
     com.google.android.material.floatingactionbutton.FloatingActionButton floatingActionButton;
-
-
     CustPrograssbar custPrograssbar;
     SessionManager sessionManager;
     Store user;
@@ -97,9 +106,40 @@ public class ProductFragment extends Fragment implements GetResult.MyListener, O
                 startActivity(new Intent(getActivity(), AddProductActivity.class));
             }
         });
+        img_search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                linear3.setVisibility(View.VISIBLE);
+            }
+        });
+        txtSearchItem.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
+
+                filter(s.toString());
+            }
+        });
         return view;
     }
-
+    private void filter(String text) {
+        ArrayList<ProductDataItem> mytempLists1 = new ArrayList<>();
+        for (ProductDataItem item : pendinglistMain){
+            if (item.getProductName().toLowerCase().startsWith(text.toLowerCase())){
+                mytempLists1.add(item);
+            }else{
+                tv_noitemfound.setVisibility(View.VISIBLE);
+            }
+        }
+        myOrderAdepter.filterListed(mytempLists1);
+    }
     private void getProduct() {
         custPrograssbar.prograssCreate(getActivity());
         JSONObject jsonObject = new JSONObject();
@@ -176,17 +216,28 @@ public class ProductFragment extends Fragment implements GetResult.MyListener, O
                 holder.lvlOffer.setVisibility(View.VISIBLE);
                 holder.txtDscount.setVisibility(View.VISIBLE);
             }
-            double res = (Double.parseDouble(productItem.getProductInfo().get(0).getProductPrice()) / 100.0f) * Double.parseDouble(productItem.getProductInfo().get(0).getProductDiscount());
+            double res1 = (Double.parseDouble(productItem.getProductInfo().get(0).getProductPrice()) / 100.0f) * Double.parseDouble(
+                    productItem.getProductInfo().get(0).getProductDiscount());
+            double res = (Double.parseDouble(productItem.getProductInfo().get(0).getProductPrice()) / 100.0f) * Double.parseDouble(
+                    productItem.getProductInfo().get(0).getProductDiscount());
             res = Double.parseDouble(productItem.getProductInfo().get(0).getProductPrice()) - res;
+
             holder.txtPrice.setText(sessionManager.getStringData(curruncy) + new DecimalFormat("##.##").format(res));
             holder.txtDscount.setText(sessionManager.getStringData(curruncy) + productItem.getProductInfo().get(0).getProductPrice());
+
             holder.txtOffer.setText(productItem.getProductInfo().get(0).getProductDiscount() + "%\nOFF");
             holder.txtDscount.setPaintFlags(holder.txtDscount.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+
+
             Glide.with(getActivity()).load(baseUrl + productItem.getProductImage().get(0)).placeholder(R.drawable.slider).into(holder.imgIcon);
             holder.rltDetail.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    startActivity(new Intent(getActivity(), ProductActivity.class).putExtra("MyClass", productItem).putParcelableArrayListExtra("MyList", productItem.getProductInfo()));
+                    Intent i = new Intent(getActivity(), ProductActivity.class);
+                    i.putExtra("MyClass", productItem)
+                            .putParcelableArrayListExtra("MyList", productItem.getProductInfo());
+                    i.putExtra("price",res1);
+                    startActivity(i);
                 }
             });
         }
@@ -196,6 +247,11 @@ public class ProductFragment extends Fragment implements GetResult.MyListener, O
             return productDataItems.size();
         }
 
+        public void filterListed(ArrayList<ProductDataItem> mytempLists1) {
+            this.productDataItems = mytempLists1;
+            Log.d("list,",new Gson().toJson(mytempLists1));
+            notifyDataSetChanged();
+        }
         public class ViewHolder extends RecyclerView.ViewHolder {
             @BindView(R.id.img_icon)
             ImageView imgIcon;

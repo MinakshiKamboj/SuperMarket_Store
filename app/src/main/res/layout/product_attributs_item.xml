@@ -41,6 +41,17 @@
             android:layout_weight="1.1"
             android:padding="10dp"
             android:text="12%"
+            android:visibility="gone"
+            android:inputType="numberDecimal"
+            android:textSize="12dp" />
+
+        <EditText
+            android:id="@+id/txt_discount1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.1"
+            android:padding="10dp"
+            android:text="12%"
             android:inputType="numberDecimal"
             android:textSize="12dp" />
 

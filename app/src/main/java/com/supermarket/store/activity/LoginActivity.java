@@ -7,15 +7,22 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.onesignal.OneSignal;
 import com.supermarket.store.R;
 import com.supermarket.store.model.LoginStore;
+import com.supermarket.store.notification.MyFirebaseMessagingService;
 import com.supermarket.store.retrofit.APIClient;
 import com.supermarket.store.retrofit.GetResult;
 import com.supermarket.store.utils.CustPrograssbar;
@@ -44,6 +51,7 @@ public class LoginActivity extends AppCompatActivity implements GetResult.MyList
     TextView txtLogin;
     CustPrograssbar custPrograssbar;
     SessionManager sessionManager;
+    String deviceId="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,12 +61,18 @@ public class LoginActivity extends AppCompatActivity implements GetResult.MyList
         getSupportActionBar().hide();
         custPrograssbar = new CustPrograssbar();
         sessionManager = new SessionManager(this);
-
+      /*  FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
+            if (task.isSuccessful()){
+                deviceId = task.getResult();
+            }
+        });*/
+        FirebaseInstanceId.getInstance().getToken();
         if (sessionManager.getBooleanData("rlogin")) {
             startActivity(new Intent(LoginActivity.this, HomeActivity.class));
             finish();
         }
     }
+
 
     @OnClick(R.id.txt_login)
     public void onClick() {

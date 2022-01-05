@@ -11,9 +11,11 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.gson.Gson;
 import com.supermarket.store.R;
 import com.supermarket.store.model.StoreReportDataItem;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -22,7 +24,7 @@ import butterknife.ButterKnife;
 import static com.supermarket.store.retrofit.APIClient.baseUrl;
 
 public class Homeadepter extends RecyclerView.Adapter<Homeadepter.ViewHolder> {
-    private List<StoreReportDataItem> dataItemList;
+    List<StoreReportDataItem> dataItemList;
     Context mContext;
 
     public Homeadepter(List<StoreReportDataItem> dataItemList,Context context) {
@@ -56,6 +58,11 @@ public class Homeadepter extends RecyclerView.Adapter<Homeadepter.ViewHolder> {
         return dataItemList.size();
     }
 
+    public void filterListed(ArrayList<StoreReportDataItem> mytempLists1) {
+        this.dataItemList = mytempLists1;
+        Log.d("list,",new Gson().toJson(mytempLists1));
+        notifyDataSetChanged();
+    }
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.txt_title)

@@ -50,11 +50,11 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_weight="1.1"
             android:gravity="center"
             android:padding="10dp"
-            android:text="%"
-            android:layout_gravity="center"
+            android:text="Dis Amount"
             android:textColor="@color/colorBalck"
             android:textStyle="bold" />
 

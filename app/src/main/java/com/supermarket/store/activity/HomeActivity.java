@@ -1,15 +1,23 @@
 package com.supermarket.store.activity;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 import com.supermarket.store.R;
 import com.supermarket.store.fregment.HomeFragment;
 import com.supermarket.store.fregment.NotificationFragment;
@@ -26,7 +34,9 @@ public class HomeActivity extends AppCompatActivity implements BottomNavigationV
     FrameLayout fragmentFrame;
     @BindView(R.id.bottom_navigation)
     BottomNavigationView bottomNavigation;
+    TextView txt;
 
+    @SuppressLint("WrongThread")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,6 +44,9 @@ public class HomeActivity extends AppCompatActivity implements BottomNavigationV
         ButterKnife.bind(this);
         bottomNavigation.setOnNavigationItemSelectedListener(this);
         bottomNavigation.setSelectedItemId(R.id.navigation_home);
+         FirebaseInstanceId.getInstance().getToken();
+
+
     }
 
     public boolean callFragment(Fragment fragmentClass) {
